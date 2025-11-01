@@ -1,6 +1,7 @@
 import { auth } from '@/lib/auth'
 import { redirect } from 'next/navigation'
 import Link from 'next/link'
+import LogoutButton from '@/components/LogoutButton'
 
 export default async function DashboardPage() {
   const session = await auth()
@@ -22,6 +23,7 @@ export default async function DashboardPage() {
               <span className="text-xs bg-blue-100 text-blue-800 px-2 py-1 rounded">
                 {session.user?.role}
               </span>
+              <LogoutButton />
             </div>
           </div>
         </div>

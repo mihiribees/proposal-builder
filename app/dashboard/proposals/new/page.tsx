@@ -1,7 +1,7 @@
 'use client'
 
-import { useState } from 'react'
-import { useRouter } from 'next/navigation'
+import { useState, useEffect } from 'react'
+import { useRouter, useSearchParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
 
 const SectionEditor = dynamic(() => import('@/components/SectionEditor'), {
@@ -11,6 +11,9 @@ const SectionEditor = dynamic(() => import('@/components/SectionEditor'), {
 
 export default function NewProposalPage() {
   const router = useRouter()
+  const searchParams = useSearchParams()
+  const templateId = searchParams.get('templateId')
+  
   const [title, setTitle] = useState('')
   const [clientName, setClientName] = useState('')
   const [clientCompany, setClientCompany] = useState('')
@@ -35,6 +38,46 @@ export default function NewProposalPage() {
   const [loading, setLoading] = useState(false)
   const [uploading, setUploading] = useState(false)
   const [error, setError] = useState('')
+  const [templates, setTemplates] = useState<Array<{ id: string; name: string; category?: string }>>([])
+  const [selectedTemplateId, setSelectedTemplateId] = useState(templateId || '')
+
+  // Fetch available templates
+  useEffect(() => {
+    fetchTemplates()
+  }, [])
+
+  // Load template if templateId is provided or selected
+  useEffect(() => {
+    if (selectedTemplateId) {
+      loadTemplate(selectedTemplateId)
+    }
+  }, [selectedTemplateId])
+
+  const fetchTemplates = async () => {
+    try {
+      const res = await fetch('/api/templates')
+      if (res.ok) {
+        const data = await res.json()
+        setTemplates(data)
+      }
+    } catch (error) {
+      console.error('Error fetching templates:', error)
+    }
+  }
+
+  const loadTemplate = async (id: string) => {
+    try {
+      const res = await fetch(`/api/templates/${id}`)
+      if (res.ok) {
+        const template = await res.json()
+        if (template.sections?.sections) {
+          setSections(template.sections.sections)
+        }
+      }
+    } catch (error) {
+      console.error('Error loading template:', error)
+    }
+  }
 
   const handleLogoUpload = async (e: React.ChangeEvent<HTMLInputElement>) => {
     const file = e.target.files?.[0]
@@ -82,7 +125,8 @@ export default function NewProposalPage() {
           clientEmail,
           clientAddress,
           clientLogoUrl,
-          content: { sections }
+          content: { sections },
+          templateId: selectedTemplateId || undefined
         })
       })
 
@@ -112,6 +156,31 @@ export default function NewProposalPage() {
                 {error}
               </div>
             )}
+
+            {/* Template Selector */}
+            <div className="bg-blue-50 border border-blue-200 rounded-lg p-4">
+              <label htmlFor="template" className="block text-sm font-medium text-gray-700 mb-2">
+                Start with a Template (Optional)
+              </label>
+              <select
+                id="template"
+                value={selectedTemplateId}
+                onChange={(e) => setSelectedTemplateId(e.target.value)}
+                className="block w-full px-3 py-2 border border-gray-300 rounded-md shadow-sm focus:outline-none focus:ring-blue-500 focus:border-blue-500"
+              >
+                <option value="">-- Start from scratch --</option>
+                {templates.map((template) => (
+                  <option key={template.id} value={template.id}>
+                    {template.name} {template.category ? `(${template.category})` : ''}
+                  </option>
+                ))}
+              </select>
+              {selectedTemplateId && (
+                <p className="mt-2 text-sm text-blue-600">
+                  ✓ Template loaded. You can still customize all sections below.
+                </p>
+              )}
+            </div>
 
             <div className="bg-white shadow rounded-lg p-6 space-y-4">
               <div>

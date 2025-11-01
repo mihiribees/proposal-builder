@@ -5,8 +5,8 @@ import { z } from 'zod'
 
 const templateSchema = z.object({
   name: z.string().min(1),
+  content: z.any(),
   category: z.string().optional(),
-  sections: z.any(),
   thumbnailUrl: z.string().optional()
 })
 
@@ -48,9 +48,13 @@ export async function POST(req: NextRequest) {
     const body = await req.json()
     const validatedData = templateSchema.parse(body)
 
+    // Map content to sections for Prisma
     const template = await prisma.template.create({
       data: {
-        ...validatedData,
+        name: validatedData.name,
+        sections: validatedData.content, // Map content to sections
+        category: validatedData.category,
+        thumbnailUrl: validatedData.thumbnailUrl,
         createdBy: session.user.id
       }
     })

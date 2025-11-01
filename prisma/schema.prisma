@@ -45,9 +45,9 @@ model User {
   comments       Comment[]
   images         Image[]
   companySetting CompanySetting?
-  sharedProposals ProposalShare[] @relation("SharedWith")
-  sharedByMe     ProposalShare[] @relation("SharedBy")
-  versionChanges VersionHistory[]
+  shares         ProposalShare[] @relation("SharedWithUser")
+  sharedBy       ProposalShare[] @relation("SharedByUser")
+  versions       VersionHistory[]
 }
 
 model Template {
@@ -61,7 +61,6 @@ model Template {
   creator     User?    @relation(fields: [createdBy], references: [id])
   createdAt   DateTime @default(now())
   updatedAt   DateTime @updatedAt
-
   proposals   Proposal[]
 }
 
@@ -96,21 +95,19 @@ model Proposal {
 model ProposalShare {
   id                String   @id @default(cuid())
   proposalId        String
-  proposal          Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  proposal          Proposal @relation(fields: [proposalId], references: [id])
   sharedWithUserId  String
-  sharedWith        User     @relation("SharedWith", fields: [sharedWithUserId], references: [id])
+  sharedWith        User     @relation("SharedWithUser", fields: [sharedWithUserId], references: [id])
   permission        Permission @default(VIEW)
   sharedById        String
-  sharedBy          User     @relation("SharedBy", fields: [sharedById], references: [id])
+  sharedBy          User     @relation("SharedByUser", fields: [sharedById], references: [id])
   sharedAt          DateTime @default(now())
-
-  @@unique([proposalId, sharedWithUserId])
 }
 
 model Comment {
   id                String   @id @default(cuid())
   proposalId        String
-  proposal          Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  proposal          Proposal @relation(fields: [proposalId], references: [id])
   userId            String
   user              User     @relation(fields: [userId], references: [id])
   sectionId         String?
@@ -126,7 +123,7 @@ model Comment {
 model PricingItem {
   id              String   @id @default(cuid())
   proposalId      String
-  proposal        Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  proposal        Proposal @relation(fields: [proposalId], references: [id])
   serviceDescription String
   cost            Float
   frequency       String?
@@ -137,7 +134,7 @@ model PricingItem {
 model Image {
   id          String   @id @default(cuid())
   proposalId  String?
-  proposal    Proposal? @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  proposal    Proposal? @relation(fields: [proposalId], references: [id])
   url         String
   filename    String?
   fileSize    Int?
@@ -150,7 +147,7 @@ model Image {
 model VersionHistory {
   id              String   @id @default(cuid())
   proposalId      String
-  proposal        Proposal @relation(fields: [proposalId], references: [id], onDelete: Cascade)
+  proposal        Proposal @relation(fields: [proposalId], references: [id])
   contentSnapshot Json
   changedBy       String?
   changer         User?    @relation(fields: [changedBy], references: [id])
