@@ -50,6 +50,12 @@ export default function ProposalEditor({ content, onChange, readOnly = false }: 
     }
   }, [content, editor])
 
+  useEffect(() => {
+    if (editor) {
+      editor.setEditable(!readOnly)
+    }
+  }, [readOnly, editor])
+
   if (!editor) {
     return null
   }

@@ -307,10 +307,16 @@ export async function POST(req: NextRequest) {
 
     const buffer = await Packer.toBuffer(doc)
 
-    return new NextResponse(Buffer.from(buffer), {
+    // Sanitize filename to remove special characters
+    const sanitizedFilename = proposal.title
+      .replace(/[^a-zA-Z0-9\s-]/g, '_')
+      .replace(/\s+/g, '_')
+      .substring(0, 100)
+
+    return new NextResponse(new Uint8Array(buffer), {
       headers: {
         'Content-Type': 'application/vnd.openxmlformats-officedocument.wordprocessingml.document',
-        'Content-Disposition': `attachment; filename="${proposal.title}.docx"`
+        'Content-Disposition': `attachment; filename="${sanitizedFilename}.docx"`
       }
     })
   } catch (error) {

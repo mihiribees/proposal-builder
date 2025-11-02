@@ -6,7 +6,13 @@
     "dev": "next dev",
     "build": "next build",
     "start": "next start",
-    "lint": "next lint"
+    "lint": "next lint",
+    "db:seed": "tsx prisma/seed.ts",
+    "db:seed-docx": "tsx prisma/seed-from-docx.ts",
+    "db:seed-century": "tsx prisma/seed-century-ply.ts"
+  },
+  "prisma": {
+    "seed": "tsx prisma/seed.ts"
   },
   "keywords": [],
   "author": "",
@@ -41,6 +47,9 @@
     "@types/react-dom": "^19.2.2",
     "autoprefixer": "^10.4.21",
     "bcrypt": "^6.0.0",
+    "docx": "^9.5.1",
+    "dotenv": "^17.2.3",
+    "mammoth": "^1.11.0",
     "next": "^16.0.1",
     "next-auth": "^5.0.0-beta.30",
     "postcss": "^8.5.6",
@@ -50,5 +59,8 @@
     "tailwindcss": "^4.1.16",
     "typescript": "^5.9.3",
     "zod": "^4.1.12"
+  },
+  "devDependencies": {
+    "tsx": "^4.20.6"
   }
 }
