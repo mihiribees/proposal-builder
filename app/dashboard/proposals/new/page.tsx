@@ -1,6 +1,6 @@
 'use client'
 
-import { useState, useEffect } from 'react'
+import { useState, useEffect, Suspense } from 'react'
 import { useRouter, useSearchParams } from 'next/navigation'
 import dynamic from 'next/dynamic'
 
@@ -9,7 +9,7 @@ const SectionEditor = dynamic(() => import('@/components/SectionEditor'), {
   loading: () => <div>Loading editor...</div>
 })
 
-export default function NewProposalPage() {
+function NewProposalForm() {
   const router = useRouter()
   const searchParams = useSearchParams()
   const templateId = searchParams.get('templateId')
@@ -302,5 +302,13 @@ export default function NewProposalPage() {
         </div>
       </div>
     </div>
+  )
+}
+
+export default function NewProposalPage() {
+  return (
+    <Suspense fallback={<div className="min-h-screen bg-gray-50 flex items-center justify-center">Loading...</div>}>
+      <NewProposalForm />
+    </Suspense>
   )
 }

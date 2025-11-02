@@ -49,7 +49,7 @@ export async function POST(
       data: {
         title: title || `${originalProposal.title} (Copy)`,
         templateId: originalProposal.templateId,
-        content: originalProposal.content,
+        content: originalProposal.content as any,
         clientName: clientName || null,
         clientCompany: clientCompany || null,
         clientEmail: clientEmail || null,

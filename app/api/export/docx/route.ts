@@ -182,7 +182,8 @@ export async function POST(req: NextRequest) {
                   transformation: {
                     width: 150,
                     height: 75
-                  }
+                  },
+                  type: 'png'
                 })
               ],
               alignment: AlignmentType.CENTER,
@@ -239,8 +240,9 @@ export async function POST(req: NextRequest) {
     )
 
     // Add sections if they exist
-    if (proposal.content?.sections && Array.isArray(proposal.content.sections)) {
-      proposal.content.sections
+    const content = proposal.content as any
+    if (content?.sections && Array.isArray(content.sections)) {
+      content.sections
         .sort((a: any, b: any) => a.order - b.order)
         .forEach((section: any) => {
           // Section title

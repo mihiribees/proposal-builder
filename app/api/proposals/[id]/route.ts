@@ -122,7 +122,7 @@ export async function PUT(
     await prisma.versionHistory.create({
       data: {
         proposalId: id,
-        contentSnapshot: proposal.content,
+        contentSnapshot: proposal.content as any,
         changedBy: session.user.id,
         changeDescription: 'Proposal updated'
       }
